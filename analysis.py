@@ -8,6 +8,7 @@ from textblob import TextBlob
 import nltk
 import ssl
 from nltk.corpus import stopwords
+from country import Country
 
 
 try:
@@ -28,13 +29,6 @@ from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 from wordcloud import WordCloud
-
-
-#read from csv first
-tweets_df = pd.read_csv('country.csv')
-print(tweets_df.head().to_string())
-print(tweets_df.columns)
-print("Total unique tweets are ",tweets_df.shape[0])
 
 
 #dropping the
@@ -120,6 +114,26 @@ def ShowBarChart():
     ax.set_ylabel('Percentage of each ')
     ax.set_title('Chatgpt based sentiment analysis Overall')
     plt.show()
+
+
+
+def top10Countries():
+    # Top 10 countries discussing ChatGPT
+    df_1 = tweets_df
+    df_country = pd.DataFrame(df_1[df_1['Country'] != 'Unknown']['Country'].value_counts())
+    df_country = df_country.reset_index()
+    total = df_country['count'].sum()
+    percentage = round(df_country['count'] / total * 100, 1)
+    df_country['Percentage'] = percentage
+    print(df_country[0:10])
+    plt.bar(df_country[0:10]['Country'], df_country[0:10]['Percentage'])
+    plt.xlabel('Countries')
+    plt.ylabel('Percentage')
+    plt.title('Top 10 countries discussing about ChatGPT')
+    plt.legend()
+    plt.show()
+
+
 
 #Method to display top five countries with positive,negative and neutral tweets.
 def showCountryChart():
@@ -238,9 +252,18 @@ def NegativeWordCloud():
 
 if __name__ == "__main__":
 
+    # read from csv first
+    country = Country()
+    country.fetchCountry()
+    tweets_df = pd.read_csv('country.csv')
+    print(tweets_df.head().to_string())
+    print(tweets_df.columns)
+    print("Total unique tweets are ", tweets_df.shape[0])
+
     tweets_df.Tweet = tweets_df['Tweet'].apply(preprocessing_tweets)
     sentiment_analysis()
     ShowBarChart()
+    top10Countries()
     showCountryChart()
     wordCloud()
     PositiveWordCloud()
