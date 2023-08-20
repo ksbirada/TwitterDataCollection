@@ -1,4 +1,4 @@
-# SMDM Project
+# Twitter Data Collection for SMDM Project
 
 Sentiment Analysis on ChatGPT
 
